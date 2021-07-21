@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.Events;
 
 public class MainManager : MonoBehaviour
 {
@@ -17,6 +18,10 @@ public class MainManager : MonoBehaviour
     private int m_Points;
     
     private bool m_GameOver = false;
+
+    public UnityEvent StartGame;
+
+    public UnityEvent GameIsOver;
 
     
     // Start is called before the first frame update
@@ -36,6 +41,8 @@ public class MainManager : MonoBehaviour
                 brick.onDestroyed.AddListener(AddPoint);
             }
         }
+
+        StartGame!.Invoke();
     }
 
     private void Update()
@@ -70,7 +77,15 @@ public class MainManager : MonoBehaviour
 
     public void GameOver()
     {
+        if(m_Points > HighScoreManager.highScore)
+        {
+            HighScoreManager.SaveHighScore(HighScoreManager.currentPlayerName, m_Points);
+            HighScoreManager.LoadHighScore();
+            GameIsOver!.Invoke();
+        }
+
         m_GameOver = true;
         GameOverText.SetActive(true);
     }
+
 }
